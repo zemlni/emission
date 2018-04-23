@@ -2,38 +2,42 @@
 import time
 import qutip
 import numpy as np
-#from matplotlib import pyplot as plt
+from matplotlib import pyplot as plt
 
-def simulate():
-    for n in range(100, 101):
-        e = qutip.basis(n, n-1) # alternate
+def simulate(n):
 
-        # expected values
-        ev = [qutip.basis(n, k)*qutip.basis(n, k).dag() for k in range(n)]
+    e = qutip.basis(n, n-1) # alternate
 
-        gamma = 0.1 # alternate
+    # expected values
+    ev = [qutip.basis(n, k)*qutip.basis(n, k).dag() for k in range(n)]
 
-        L = np.sqrt(gamma)*qutip.destroy(n)
+    gamma = 0.1 # alternate
 
-        H = qutip.qzero(n)
+    L = np.sqrt(gamma)*qutip.destroy(n)
 
-        rho = [[1/n for i in range(n)] for i in range(n)] # alternate
-        initial_state = qutip.Qobj(rho, dims=[[n], [n]], shape=(n, n), isherm=True, type="oper")
+    H = 1/2 + qutip.num(n)
+    #H = qutip.qzero(n)
 
-        times = np.linspace(0.0, 100.0, 100)
+    #rho = [[1/n for i in range(n)] for i in range(n)] # alternate
+    rho = e * e.dag()
+    #initial_state = qutip.Qobj(rho, dims=[[n], [n]], shape=(n, n), isherm=True, type="oper")
+    initial_state = e
 
-        result = qutip.mesolve(H, initial_state, times, L, ev)
-        '''
-        fig, ax = plt.subplots()
-        for k in range(n):
-            ax.plot(times, result.expect[k])
-        plt.show(fig)
-        '''
+    times = np.linspace(0.0, 100.0, 100)
+
+    return qutip.mesolve(H, initial_state, times, L, ev)
+
 
 def main():
     start_time = time.time()
-    simulate()
+    n = 50
+    result = simulate(n)
     print('runtime: ' + str(time.time()-start_time) + ' seconds')
+    fig, ax = plt.subplots()
+    times = np.linspace(0.0, 100.0, 100)
+    for k in range(n):
+        ax.plot(times, result.expect[k])
+    plt.show(fig)
 
 if __name__ == '__main__':
     main()
