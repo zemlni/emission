@@ -29,15 +29,25 @@ def simulate(n):
 
 
 def main():
-    start_time = time.time()
-    n = 50
-    result = simulate(n)
-    print('runtime: ' + str(time.time()-start_time) + ' seconds')
+    runtimes = []
+    for n in range(5, 100):
+
+        start_time = time.time()
+        result = simulate(n)
+        runtimes.append(time.time() - start_time)
+
+    fig, ax = plt.subplots()
+    ax.plot(range(5, 100), runtimes)
+    plt.show(fig)
+
+    '''
     fig, ax = plt.subplots()
     times = np.linspace(0.0, 100.0, 100)
     for k in range(n):
         ax.plot(times, result.expect[k])
     plt.show(fig)
+    '''
+
 
 if __name__ == '__main__':
     main()
