@@ -46,11 +46,14 @@ sigma_UU = state_UU * state_UU.dag()
 g = 5  # coupling strength
 H0 = -g * (sigma_ge.dag() * a + a.dag() * sigma_ge)  # time-independent term
 H1 = (sigma_ue.dag() + sigma_ue)  # time-dependent term
+print(H0)
+print(H1)
 
 def H1_coeff(t, args):
     return 9 * np.exp(-(t / 5.) ** 2)
 
-H = [H0,H1]
+#H = [H0, H1]
+H = [H0,[H1,H1_coeff]]
 
 output = mesolve(H, psi0, t, c_ops, [ada, sigma_UU, sigma_GG])
 
