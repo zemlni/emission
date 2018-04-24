@@ -17,7 +17,9 @@ H = qutip.qzero(2)
 initial_state = e * e.dag()
 times = np.linspace(0.0, 10.0, 100)
 
-result = qutip.mesolve(H, initial_state, times, L, [ee, gg])
+options = qutip.Options()
+options.nsteps = options.nsteps*10000000000000
+result = qutip.mesolve(H, initial_state, times, L, [ee, gg], options=options)
 
 fig, ax = plt.subplots()
 ax.plot(times, result.expect[0])
