@@ -7,7 +7,6 @@ from matplotlib import pyplot as plt
 def simulate(n):
 
     e = qutip.basis(n, n-1) # alternate
-    print(e * e.dag())
     # expected values
     #ev = [qutip.basis(n, k)*qutip.basis(n, k).dag() for k in range(n)]
 

@@ -8,8 +8,8 @@ np.set_printoptions(linewidth=1e6, edgeitems=1e6)
 
 def simulate(n):
     final_states = []
-    iterations = 1000
-    for _ in range(iterations):
+    iterations = 100
+    for i in range(iterations):
         e = qutip.basis(n, n - 1)
 
         state = e
@@ -27,15 +27,31 @@ def simulate(n):
         options = qutip.Options()
         options.store_final_state = True
         options.nsteps = options.nsteps * 10000
-        options.method = "bdf"
+        #options.method = "bdf"
         num_emissions = 0
+
         for level in range(n):
             if random() > gamma ** level:
                 num_emissions = level
                 break
-        print(num_emissions)
+
         #num_emissions = int(math.floor(random() * n))
         emission_times = sorted([random() * 80 + 10 for _ in range(num_emissions)])
+        time = 100
+        prev_time = 0
+        emissions = 0
+        for current_time in range(1, time):
+            if random() < gamma ** 2 and emissions < n - 1:
+                #emission
+                state = L * state
+                state = state.unit()
+                emissions += 1
+            times = np.linspace(prev_time, current_time, 10)
+            result = qutip.mesolve(H, state, times, [], [], options=options)
+            state = result.states[-1]
+            prev_time = current_time
+
+        '''
         prev_time = 0
         for emission_time in emission_times:
             state = state.unit()
@@ -46,11 +62,12 @@ def simulate(n):
             state = L * state
 
             prev_time = emission_time
-
+        
         times = np.linspace(prev_time, 100, 5)
         result = qutip.mesolve(H, state, times, [], [], options=options)
-
-        final_states.append(result.states[-1])
+        '''
+        final_states.append(state)
+        print("iteration: " + str(i))
 
     sum = qutip.qzero(n)
     for current in final_states:
