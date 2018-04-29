@@ -6,9 +6,8 @@ from matplotlib import pyplot as plt
 import math
 np.set_printoptions(linewidth=1e6, edgeitems=1e6)
 
-def simulate(n):
+def simulate(n, iterations):
     final_states = []
-    iterations = 100
     for i in range(iterations):
         e = qutip.basis(n, n - 1)
 
@@ -22,7 +21,7 @@ def simulate(n):
         lamb = 0.05
         H0 = 1 / 2 + qutip.num(n)
         #H0 = 1/2 + qutip.num(n) + lamb * (qutip.position(n)) ** 4
-        H = H0 - np.complex(1) * L * L.dag()
+        H = H0 - np.complex(1) * L * L.dag() / 2
 
         options = qutip.Options()
         options.store_final_state = True
