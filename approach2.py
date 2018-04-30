@@ -8,6 +8,7 @@ np.set_printoptions(linewidth=1e6, edgeitems=1e6)
 
 def simulate(n, iterations):
     final_states = []
+    emission_times = []
     for i in range(iterations):
         e = qutip.basis(n, n - 1)
 
@@ -35,16 +36,18 @@ def simulate(n, iterations):
                 break
 
         #num_emissions = int(math.floor(random() * n))
-        emission_times = sorted([random() * 80 + 10 for _ in range(num_emissions)])
+        #emission_times = sorted([random() * 80 + 10 for _ in range(num_emissions)])
         time = 100
         prev_time = 0
         emissions = 0
         for current_time in range(1, time):
-            if random() < gamma ** 2 and emissions < n - 1:
+            if random() < gamma ** 2 / 4 and emissions < n - 1:
                 #emission
                 state = L * state
                 state = state.unit()
                 emissions += 1
+                emission_times.append(current_time)
+                #print(current_time, "EMISSION")
             times = np.linspace(prev_time, current_time, 10)
             result = qutip.mesolve(H, state, times, [], [], options=options)
             state = result.states[-1]
@@ -73,7 +76,18 @@ def simulate(n, iterations):
         sum = np.add(sum, current * current.dag())
     sum /= iterations
 
-    return sum
+    expectations = [expect(i, emission_times) for i in range(100)]
+    print(emission_times)
+    print(expectations)
+
+    return sum, expectations
+
+def expect(i, emission_times):
+    sum = 0
+    for num in emission_times:
+        if num > i:
+            sum += 1
+    return sum/len(emission_times)
 
 '''
 runtimes = []
